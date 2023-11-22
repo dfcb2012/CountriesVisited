@@ -12,11 +12,18 @@
 
 <body>
 
-  <form action="/add" method="post" id="formPost">
+  <div class="spinner">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <form action="/add" method="post">
     <input type="text" name="country" autofocus placeholder="Enter country name">
     <!-- Submit button that will trigger the modal with error, if any -->
     <button type="submit" data-bs-toggle="modal" data-bs-target="#errorModal">Add</button>
-  </form> 
+  </form>
 
   <section class="ag-canvas">
     <svg class="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -393,8 +400,15 @@
           <%= error %>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
+          <% if (locals.exist) { %>
+            <form action="/delete" method="POST">
+              <input type="hidden" name="countryCode" value="<%= locals.countryCode %>">
+              <button type="submit" class="btn btn-danger" id="deleteBtn">Sim</button>
+            </form>
+              <button type="button" class="btn btn-success" id="deleteBtn" data-bs-dismiss="modal">Não</button>
+          <% }else { %>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Compreendi</button>
+          <% } %>    
         </div>
       </div>
     </div>
@@ -419,6 +433,27 @@
       // document.getElementById(code).style.fill = 'teal'
     });
   </script>
+
+  <!-- Script to delete the country -->
+  <script>
+    const code = "<% locals.countryCode %>"
+    $('#deleteBtn').on('click', function() {
+      $(`#${code}`).removeAttr('style');
+    })
+  </script>
+
+  <script>
+    const spinnerWrapper = $('.spinner');
+    window.addEventListener('load', () => {
+      spinnerWrapper.css('opacity', '0');
+
+      setTimeout(() => {
+        spinnerWrapper.css('display', 'none')
+      }, 2000)
+
+    })
+  </script>
+
 </body>
 
 </html>

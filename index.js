@@ -42,8 +42,8 @@ app.post('/add', async (req, res) => {
   console.log(countryChosen);
 
   const result = await db.query(
-    "SELECT country_code FROM countries WHERE country_name = $1",
-    [countryChosen]
+    "SELECT country_code FROM countries WHERE LOWER(country_name) LIKE $1 || '%';",
+    [countryChosen.toLowerCase()]
   );
 
     if (result.rows.length === 1) {
@@ -53,17 +53,20 @@ app.post('/add', async (req, res) => {
       console.log(countryCode);
 
       const countryExist = await db.query(
-        "SELECT * FROM visited_countries WHERE country_code = $1",
+        "SELECT country_code FROM visited_countries WHERE country_code = $1",
         [countryCode]
       );
 
       if (countryExist.rowCount === 1){
         const countriesVisited = await alreadyVisited();
         totalOfCountries = countriesVisited.length;
+        const exist = true;
         res.render('index.ejs', {
           countries: countriesVisited,
           total: countriesVisited.length,
-          error: "O país já se encontra adicionado!",
+          countryCode: countryCode,
+          error: "O país já se encontra adicionado! Sendo assim pretende eliminá-lo?",
+          exist: exist
         });
       } else {
         await db.query(
@@ -83,6 +86,17 @@ app.post('/add', async (req, res) => {
       });
     }
 });
+
+app.post('/delete', async (req, res) => {
+  const countryCode = req.body['countryCode'];
+  console.log(`Entering Delete path with country code "${countryCode}"`)
+
+  await db.query(
+    "DELETE FROM visited_countries WHERE country_code = $1",
+    [countryCode]
+  )
+    res.redirect("/");
+})
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
