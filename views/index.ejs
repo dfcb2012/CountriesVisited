@@ -12,18 +12,13 @@
 
 <body>
 
-  <div class="spinner">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-
   <form action="/add" method="post">
     <input type="text" name="country" autofocus placeholder="Enter country name">
     <!-- Submit button that will trigger the modal with error, if any -->
     <button type="submit" data-bs-toggle="modal" data-bs-target="#errorModal">Add</button>
   </form>
+
+  <div class="spinner"></div>
 
   <section class="ag-canvas">
     <svg class="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -443,15 +438,17 @@
   </script>
 
   <script>
-    const spinnerWrapper = $('.spinner');
-    window.addEventListener('load', () => {
-      spinnerWrapper.css('opacity', '0');
+    const spinner = $('.spinner');
+
+    window.addEventListener("load", () => {
+      spinner.addClass('spinner-hidden');
 
       setTimeout(() => {
-        spinnerWrapper.css('display', 'none')
+        spinner.remove();
       }, 2000)
-
-    })
+      // spinner.on("transitionend", () => {
+      // });
+    });
   </script>
 
 </body>
